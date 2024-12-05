@@ -7,9 +7,9 @@ public class ClienteForca {
 
     public static void main(String[] args) {
         try (Socket socket = new Socket(SERVIDOR, PORTA);
-             BufferedReader leitor = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter escritor = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in))) {
+             BufferedReader leitor = new BufferedReader(new InputStreamReader(socket.getInputStream())); //Le as mensagens que vem do servidor
+             PrintWriter escritor = new PrintWriter(socket.getOutputStream(), true); //Envia as mensagens para o servidor
+             BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in))) { //Le as entradas do usuário
 
             System.out.println("Conectado ao servidor da Forca!");
 
