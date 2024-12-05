@@ -67,7 +67,13 @@ public class ServidorForca {
             escritorAtual.println("Palavras erradas: " + palavrasTentadas);
             escritorAtual.println("Tentativas restantes: " + tentativasRestantes);
             escritorAtual.println("Corpo atual: " + String.join(", ", corpoAtual));
-            escritorAtual.println("Digite uma letra ou tente adivinhar a palavra:");
+            if (letrasDescobertas >= 2) {
+                escritorAtual.println("Digite uma letra ou tente adivinhar a palavra:");
+            }
+            else
+            {
+                escritorAtual.println("Digite uma letra:");
+            }
 
             String entrada = leitorAtual.readLine();
             if (entrada == null) {

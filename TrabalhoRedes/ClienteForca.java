@@ -17,7 +17,7 @@ public class ClienteForca {
             String mensagem;
             while ((mensagem = leitor.readLine()) != null) {
                 System.out.println(mensagem);
-                if (mensagem.contains("Digite uma letra ou tente adivinhar a palavra:")) {
+                if ((mensagem.contains("Digite uma letra ou tente adivinhar a palavra:")) || mensagem.contains("Digite uma letra:")) {
                     System.out.print("> ");
                     String entrada = teclado.readLine();
                     escritor.println(entrada);
