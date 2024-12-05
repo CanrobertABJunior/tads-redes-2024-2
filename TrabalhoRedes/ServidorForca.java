@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Random;
 
 public class ServidorForca {
     private static final int PORTA = 12345;
@@ -13,6 +14,8 @@ public class ServidorForca {
     private List<String> corpoAtual;
     private List<String> palavrasTentadas;
     private int letrasDescobertas = 0; // Contador de letras corretas descobertas
+    Random random = new Random();
+    boolean jogador1Inicio = random.nextBoolean();
 
     public static void main(String[] args) {
         new ServidorForca().iniciar();
@@ -40,7 +43,7 @@ public class ServidorForca {
             enviarMensagem(jogador1, "Jogador 2 conectado. Vamos começar!");
             enviarMensagem(jogador2, "Você está conectado. Vamos começar!");
             enviarMensagem(jogador2, "Palavra secreta: " + estadoAtual + " [" + palavraSecreta.length() + " letras]");
-            enviarMensagem(jogador2, "Jogador 1 começa!");
+            
 
             // Lógica do jogo
             gerenciarJogo(jogador1, jogador2);
@@ -51,14 +54,28 @@ public class ServidorForca {
     }
 
     public void gerenciarJogo(Socket jogador1, Socket jogador2) throws IOException {
-        BufferedReader leitor1 = new BufferedReader(new InputStreamReader(jogador1.getInputStream()));
+        BufferedReader leitor1 = new BufferedReader(new InputStreamReader(jogador1.getInputStream())); //Recebe os dados enviados pelo jogador no InputStream, converte os bytes com o InputStreamReader e lê com o BufferReader
         BufferedReader leitor2 = new BufferedReader(new InputStreamReader(jogador2.getInputStream()));
-        PrintWriter escritor1 = new PrintWriter(jogador1.getOutputStream(), true);
+        PrintWriter escritor1 = new PrintWriter(jogador1.getOutputStream(), true); //Envia os dados do servidor para o cliente com o getOutputStream e cria um objeto com PrintWriter 
         PrintWriter escritor2 = new PrintWriter(jogador2.getOutputStream(), true);
 
-        Socket jogadorAtual = jogador1;
-        PrintWriter escritorAtual = escritor1;
-        BufferedReader leitorAtual = leitor1;
+        Socket jogadorAtual;
+        PrintWriter escritorAtual;
+        BufferedReader leitorAtual;
+
+        if (jogador1Inicio) {
+            jogadorAtual = jogador1;
+            escritorAtual = escritor1;
+            leitorAtual = leitor1;
+            enviarMensagem(jogadorAtual, "Você começa!");
+            enviarMensagem(jogador2, "Jogador 1 começa!");
+        } else {
+            jogadorAtual = jogador2;
+            escritorAtual = escritor2;
+            leitorAtual = leitor2;
+            enviarMensagem(jogadorAtual, "Você começa!");
+            enviarMensagem(jogador1, "Jogador 2 começa!");
+        }
 
         while (tentativasRestantes > 0 && estadoAtual.indexOf("_") != -1) {
             escritorAtual.println("-------------------------------------");
@@ -84,7 +101,7 @@ public class ServidorForca {
                 fecharConexoes(jogador1, jogador2);
                 return; // Finaliza o servidor
             }
-            if (entrada.isEmpty()) {
+            if ((entrada.isEmpty()) || (isNumeroInteiro(entrada))) {
                 escritorAtual.println("Entrada inválida. Tente novamente.");
                 continue;
             }
@@ -95,7 +112,8 @@ public class ServidorForca {
                     // Mensagem de vitória para quem acertou a palavra
                     escritor1.println("Parabéns! O Jogador " + (jogadorAtual == jogador1 ? "1" : "2") + " acertou a palavra: " + palavraSecreta + ".");
                     escritor2.println("Parabéns! O Jogador " + (jogadorAtual == jogador1 ? "1" : "2") + " acertou a palavra: " + palavraSecreta + ".");
-                    break;
+                    //break;
+                    reiniciarPartida(jogador1, jogador2);
                 } else {
                     if (palavrasTentadas.contains(entrada)){
                         escritorAtual.println("Palavra já tentada. Tente novamente!");
@@ -168,7 +186,8 @@ public class ServidorForca {
             if (estadoAtual.indexOf("_") == -1) {
                 escritor1.println("Parabéns! A palavra era: " + palavraSecreta + ". Vocês descobriram!");
                 escritor2.println("Parabéns! A palavra era: " + palavraSecreta + ". Vocês descobriram!");
-                break;
+                //break;
+                reiniciarPartida(jogador1, jogador2);
             }
 
             // Alterna entre os jogadores
@@ -206,6 +225,33 @@ public class ServidorForca {
             System.out.println("Conexões encerradas. O servidor está sendo finalizado.");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void reiniciarPartida(Socket jogador1, Socket jogador2) throws IOException {
+        // Redefine variáveis do jogo para reiniciar
+        palavraSecreta = PALAVRAS[new Random().nextInt(PALAVRAS.length)];
+        estadoAtual = new StringBuilder("_".repeat(palavraSecreta.length()));
+        tentativasRestantes = partesDoCorpo.size();
+        letrasErradas = new HashSet<>();
+        corpoAtual = new ArrayList<>();
+        palavrasTentadas = new ArrayList<>();
+        letrasDescobertas = 0;
+
+        // Inicia um novo jogo
+        enviarMensagem(jogador1, "Jogo reiniciado! Palavra secreta: " + estadoAtual);
+        enviarMensagem(jogador2, "Jogo reiniciado! Palavra secreta: " + estadoAtual);
+        
+        // Chama o método de gerenciamento do jogo novamente
+        gerenciarJogo(jogador1, jogador2);
+    }
+
+    public static boolean isNumeroInteiro(String entrada) {
+        try {
+            Integer.parseInt(entrada);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 }
