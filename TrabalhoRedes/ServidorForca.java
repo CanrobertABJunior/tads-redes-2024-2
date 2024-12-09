@@ -14,34 +14,10 @@ public class ServidorForca {
     private List<String> palavrasTentadas;
     private int letrasDescobertas = 0; // Contador de letras corretas descobertas
     private String nicknameJogador1, nicknameJogador2;
-    //private String nicknameJogador2;
 
     public static void main(String[] args) {
         new ServidorForca().iniciar();
     }
-
-    // public void iniciar() {
-    //     try (ServerSocket servidor = new ServerSocket(PORTA)) {
-    //         System.out.println("Servidor aguardando conexões...");
-
-    //         // Aguarda dois jogadores
-    //         Socket jogador1 = servidor.accept();
-    //         System.out.println("Jogador 1 conectado.");
-    //         enviarMensagem(jogador1, "Aguardando Jogador 2...");
-
-    //         Socket jogador2 = servidor.accept();
-    //         System.out.println("Jogador 2 conectado.");
-    //         enviarMensagem(jogador1, "Jogador 2 conectado. Vamos começar!");
-    //         enviarMensagem(jogador2, "Você está conectado. Vamos começar!");
-            
-
-    //         // Lógica do jogo
-    //         gerenciarJogo(jogador1, jogador2);
-
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 
     public void iniciar() {
         try (ServerSocket servidor = new ServerSocket(PORTA)) {
@@ -145,7 +121,6 @@ public class ServidorForca {
                     escritor1.println("Parabéns! O Jogador " + (jogadorAtual == jogador1 ? nicknameJogador1 : nicknameJogador2) + " acertou a palavra: " + palavraSecreta + ".");
                     escritor2.println("Parabéns! O Jogador " + (jogadorAtual == jogador1 ? nicknameJogador1 : nicknameJogador2) + " acertou a palavra: " + palavraSecreta + ".");
                     System.out.println("O Jogador " + (jogadorAtual == jogador1 ? nicknameJogador1 : nicknameJogador2) + " acertou a palavra!");
-                    //break;
                     reiniciarPartida(jogador1, jogador2);
                 } else {
                     if (palavrasTentadas.contains(entrada)){
@@ -220,7 +195,6 @@ public class ServidorForca {
                 escritor1.println("Parabéns! A palavra era: " + palavraSecreta + ". Vocês descobriram!");
                 escritor2.println("Parabéns! A palavra era: " + palavraSecreta + ". Vocês descobriram!");
                 System.out.println("A palavra secreta foi descoberta!");
-                //break;
                 reiniciarPartida(jogador1, jogador2);
             }
 
